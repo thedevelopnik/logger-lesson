@@ -10,20 +10,20 @@ But logs are a critical part of debugging, *especially* when something is deploy
 ### Project installation
 First, fork and clone [this basic crud app](https://github.com/dsudia/mean-crud-app). Then
 
-```
-cd mean-crud-app
+```shell
+$ cd mean-crud-app
 ```
 
 Next, you'll need to have Mongo up and running on your machine. The easiest way to do that on Mac is:
 
-```
-brew install mongodb
+```shell
+$ brew install mongodb
 ```
 
 followed by
 
-```
-brew services start mongo
+```shell
+$ brew services start mongo
 ```
 
 ### Poking around
@@ -39,7 +39,7 @@ There are several popular logging packages across languages that all follow a ge
 1. Error
 1. Warn
 1. Info
-1. Debughttps://www.npmjs.com/package/bunyan
+1. Debug
 1. Trace
 
 If I read logs only at the Error level, I will only see messages logged at that level. If I search for logs at the Debug level, I will see logs for the Debug, Info, Warn and Error levels.
@@ -59,9 +59,48 @@ In a production environment at a business, you will probably log to a server som
 ## Putting it into practice
 In the mean-crud-app directory, run
 
-```
-npm i --save winston winston-daily-rotate-file
+```javascript
+npm i --save winston
 ```
 
-[Winston](https://www.npmjs.com/package/winston) is a popular logging package for Node ([Bunyan](https://www.npmjs.com/package/bunyan) is another). [Winston-daily-rotate-file](https://www.npmjs.com/package/winston-daily-rotate-file) is a plugin for Winston that automatically saves logs to a new file each day instead of endlessly writing to a single file, which is the default behavior.
+[Winston](https://www.npmjs.com/package/winston) is a popular logging package for Node ([Bunyan](https://www.npmjs.com/package/bunyan) is another). 
 
+Now let's open up `src/server/app.js` in our editor. There are a couple of console.logs in here that we can replace.
+
+At the top of the file where we are setting up our main dependencies, let's add:
+
+```javascript
+var logger = require('winston')
+```
+
+By default, Winston only logs to the console, so let's do some configuration. Below that, add:
+
+```javascript
+winston.add(winston.transports.File, { filename: 'server.log' });
+```
+
+Now it will write to a file, so our logs stick around.
+
+Finally, let's head down to where we are logging some stuff to the console in the Mongoose configuration. We have two console.logs here, one for an error, and one for some information. Let's replace these:
+
+```javascript
+// nope...
+console.log('Error connecting to the database: ' + err)
+// should be...
+logger.error('Error connecting to the databaase: ' + err)
+```
+
+```javascript
+// nope...
+console.log('Connected to database: ' + config.mongoURI.development)
+// should be...
+logger.info('Connected to database: ' + config.mongoURI.development)
+```
+
+Let's run the app and see what happens.
+
+```shell
+$ npm start
+```
+
+Note: [Winston-daily-rotate-file](https://www.npmjs.com/package/winston-daily-rotate-file) is a useful plugin for Winston that automatically saves logs to a new file each day instead of endlessly writing to a single file, which is the default behavior, but we won't be using it today because we'll only be logging for one day.
