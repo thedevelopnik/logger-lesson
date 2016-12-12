@@ -103,4 +103,26 @@ Let's run the app and see what happens.
 $ npm start
 ```
 
-Note: [Winston-daily-rotate-file](https://www.npmjs.com/package/winston-daily-rotate-file) is a useful plugin for Winston that automatically saves logs to a new file each day instead of endlessly writing to a single file, which is the default behavior, but we won't be using it today because we'll only be logging for one day.
+## Great! What else can I do?
+Let's clean up our console. We probably don't need to see every little thing our application is doing in the console. Especially now that we can see details in a file! So let's set our console and file logs to different levels
+
+Go back into app.js and add the following lines:
+
+```javascript
+logger.transports.console.level = 'warn'
+logger.transports.file.level = 'debug'
+```
+
+Run the app again. Now we don't see that *.info* log in our console, but it still shows up in the file!
+
+In the terminal, run
+
+```shell
+$ brew services stop mongo
+```
+
+Run our app again. This time there is an error connecting to the database (because we stopped it) and we get the error in both our console and our file.
+
+If we were working on an extremely complex app and ran into a bug that was hard to pin down, we could start dropping `logger.debug` everywhere, and change our console level to *debug*. The logs in our production environment could only be info and up, but in test they could be at the debug level. We can customize this process now to whatever makes sense for our workflow, rather than being locked into a logger that only logs to one place, at one level.
+
+PS: [Winston-daily-rotate-file](https://www.npmjs.com/package/winston-daily-rotate-file) is a useful plugin for Winston that automatically saves logs to a new file each day instead of endlessly writing to a single file, which is the default behavior. If you implement winston in one of your projects, I highly recommend it!
