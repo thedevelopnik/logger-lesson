@@ -106,11 +106,19 @@ $ npm start
 ## Great! What else can I do?
 Let's clean up our console. We probably don't need to see every little thing our application is doing in the console. Especially now that we can see details in a file! So let's set our console and file logs to different levels
 
-Go back into app.js and add the following lines:
+Go back into app.js and we'll do some more detailed configuration of Winston:
 
 ```javascript
-logger.transports.console.level = 'warn'
-logger.transports.file.level = 'debug'
+var winston = require('winston');
+var logger = new (winston.Logger) ({
+  transports: [
+    new (winston.transports.Console) ({level: 'error'}),
+    new (winston.transports.File) ({
+      filename: 'server.log',
+      level: 'debug'
+    })
+  ]
+});
 ```
 
 Run the app again. Now we don't see that *.info* log in our console, but it still shows up in the file!
