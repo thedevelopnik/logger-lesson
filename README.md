@@ -76,7 +76,7 @@ var logger = require('winston')
 By default, Winston only logs to the console, so let's do some configuration. Below that, add:
 
 ```javascript
-winston.add(winston.transports.File, { filename: 'server.log' });
+logger.add(logger.transports.File, { filename: 'server.log' });
 ```
 
 Now it will write to a file, so our logs stick around.
